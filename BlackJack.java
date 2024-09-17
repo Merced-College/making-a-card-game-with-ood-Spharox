@@ -1,66 +1,105 @@
+//Pablo Mendoza
+//I was unnable to communicate with my group, so I finished this alone. 
+
 import java.util.Random;
 import java.util.Scanner;
 
 
 public class BlackJack {
+    //added card class, attributes, constructor, value mutator, get methods, and toString method
+  static class Card { 
+    private int value;
+    private String suit;
+    private String rank;
+
+    public Card(int value, String suit, String rank){
+        this.value = value;
+        this.suit = suit; 
+        this.rank = rank;
+    }
+
+    public int getValue(){
+        return value;
+    }
+
+    public String getSuit(){
+        return suit;
+    }
+
+    public String getRank(){
+        return rank;
+    }
+
+    public String toString() {
+        return rank + " of " + suit;
+    }
+  }
 
   private static Card[] cards = new Card[52];
-
   private static int currentCardIndex = 0;
   private static int suitIndex = 0;
 
   public static void main(String[] args) {
-    Scanner scanner = new Scanner(System.in);
     boolean turn = true;
-    String playerDecision = "" ;
-    //added a for loop so the game can be played multiple times
-    //for (int i = 0; i < turn; i++) {
+    Scanner scanner = new Scanner(System.in);
     while(turn) {
       initializeDeck();
-      //shuffleDeck();
+      // moved String playerDecision = "" ; to continueOrDont()
+      shuffleDeck();
       int playerTotal = 0;
       int dealerTotal = 0;
       playerTotal = dealInitialPlayerCards();
 
-      //fix dealInitialDealerCards
       dealerTotal = dealInitialDealerCards();
 
-      //fix playerTurn
+      //added another function here, in the event that the player pulls 21, its an automatic blackjack.
+      if(playerTotal == 21){
+        if(dealerTotal == 21){
+            System.out.println("You and dealer both drew blackjack!"); //if both dealer and player have 21, its a tie
+        }else{
+            System.out.println("You drew a blackjack!");
+        }
+        turn = continueOrDont(playerTotal, dealerTotal, scanner); 
+        continue; 
+        // if player draws blackjack, game is over. no further input required from player
+      }
+
       playerTotal = playerTurn(scanner, playerTotal);
       if (playerTotal > 21) {
         System.out.println("You busted! Dealer wins.");
         return;
       }
 
-      //fix dealerTurn
       dealerTotal = dealerTurn(dealerTotal);
-   
-      determineWinner(playerTotal, dealerTotal);
-      //added
-      //asks player if they want to play again
-      System.out.println("Would you like to play another hand?");
-     
-      playerDecision = scanner.nextLine().toLowerCase();
-      
-      while(!(playerDecision.equals("no") || (playerDecision.equals("yes")) )){
-        System.out.println("Invalid action. Please type 'hit' or 'stand'.");
-        playerDecision = scanner.nextLine().toLowerCase();
-      }
-      if (playerDecision.equals("no"))
-          turn = false;
+      turn = continueOrDont(playerTotal, dealerTotal, scanner); 
     }
     System.out.println("Thanks for playing!");
   }
 
-  // algorithm to create deck
+  // made this its own function for more functional code
+  // essentially shifted much of the functionality of the main code into its own function so that I can make it more dynamic
+  private static boolean continueOrDont(int playerTotal, int dealerTotal, Scanner scanner) {
+    String playerDecision = "" ;
+
+    determineWinner(playerTotal, dealerTotal);
+    System.out.println("Would you like to play another hand?");
+    playerDecision = scanner.nextLine().toLowerCase();
+
+    while(!(playerDecision.equals("no") || (playerDecision.equals("yes")) )){
+        System.out.println("Invalid action. Please type 'yes' or 'no'."); //changed line here so that it correctly asks for "yes" or "no"
+        playerDecision = scanner.nextLine().toLowerCase();
+      }
+      if (playerDecision.equals("no")){
+          return false;
+      }
+    return true;
+  }
+
   private static void initializeDeck() {
-    //for (int i = 0; i < DECK.length; i++) {
     String[] SUITS = { "Hearts", "Diamonds", "Clubs","Spades" };
     String[] RANKS = { "2", "3", "4", "5", "6", "7", "8", "9","10", "Jack", "Queen", "King","Ace" };
     int suitsIndex = 0, rankIndex = 0;
     for (int i = 0; i < cards.length; i++) {
-      //DECK[i] = i;
-      //public Card(int value, String suit, String rank) {
       int val = 10;
       if(rankIndex < 9)
         val = Integer.parseInt(RANKS[rankIndex]);
@@ -73,7 +112,6 @@ public class BlackJack {
       }
     }
   }
-  // algorithm to shuffle deck
   private static void shuffleDeck() {
     Random random = new Random();
     for (int i = 0; i < cards.length; i++) {
@@ -83,21 +121,15 @@ public class BlackJack {
       cards[index] = temp;
     }
   }
-  // algorithm to deal initial player cards
   private static int dealInitialPlayerCards() {
-    /*int card1 = dealCard();
-    int card2 = dealCard();*/
     Card card1 = dealCard();
     Card card2 = dealCard();
-    
-    //System.out.println("Your cards: " + RANKS[card1] + " of " + SUITS[card1 / 13] + " and " + RANKS[card2] + " of " + SUITS[card2 / 13]);
+
     System.out.println("Your cards: " + card1.getRank() + " of " + card1.getSuit() + " and " + card2.getRank() + " of " + card2.getSuit());
         
         
-    //return cardValue(card1) + cardValue(card2);
     return card1.getValue() + card2.getValue();
   }
-  // alogrithm to deal initial dealer cards
   private static int dealInitialDealerCards() {
     Card card1 = dealCard();
     System.out.println("Dealer's card: " + card1);
@@ -112,8 +144,6 @@ public class BlackJack {
         playerTotal += newCard.getValue();
         System.out.println("You drew a " + newCard );
         if (playerTotal > 21) {
-          //added
-          //resets playerTotal so the game can be played multiple times
           System.out.println("you busted Dealer wins!" );
           playerTotal = 0;
           return playerTotal;
