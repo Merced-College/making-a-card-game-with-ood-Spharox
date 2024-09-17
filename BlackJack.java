@@ -1,12 +1,16 @@
 //Pablo Mendoza
+//9-16-2024
+//CPSC-39-12112
 //I was unnable to communicate with my group, so I finished this alone. 
-
+//I removed all original comments to make my comments easier to spot
 import java.util.Random;
 import java.util.Scanner;
 
 
 public class BlackJack {
-    //added card class, attributes, constructor, value mutator, get methods, and toString method
+
+    //added card class, attributes, constructor, get methods, and toString method
+    //didn't find a part of the code that used a mutator, so I didnt implement one here
   static class Card { 
     private int value;
     private String suit;
@@ -54,14 +58,13 @@ public class BlackJack {
 
       //added another function here, in the event that the player pulls 21, its an automatic blackjack.
       if(playerTotal == 21){
-        if(dealerTotal == 21){
-            System.out.println("You and dealer both drew blackjack!"); //if both dealer and player have 21, its a tie
+        if(dealerTotal == 21){// if function, determines system output depending on dealer's hand
+            System.out.println("You and dealer both drew blackjack!"); 
         }else{
             System.out.println("You drew a blackjack!");
         }
-        turn = continueOrDont(playerTotal, dealerTotal, scanner); 
-        continue; 
-        // if player draws blackjack, game is over. no further input required from player
+        turn = continueOrDont(playerTotal, dealerTotal, scanner);  // function will display victory/tie, and wether turn == true or false
+        continue; // continue returns to top of code, skipping the playerTurn event
       }
 
       playerTotal = playerTurn(scanner, playerTotal);
@@ -69,9 +72,10 @@ public class BlackJack {
         System.out.println("You busted! Dealer wins.");
         return;
       }
-
+    
       dealerTotal = dealerTurn(dealerTotal);
-      turn = continueOrDont(playerTotal, dealerTotal, scanner); 
+      //eliminated redundant code here
+      turn = continueOrDont(playerTotal, dealerTotal, scanner);  
     }
     System.out.println("Thanks for playing!");
   }
